@@ -1,16 +1,46 @@
 
-***Just a few basic summation on the more recent and important enhancements to Java***
+***Just a few basic summation of the more recent and important enhancements to Java***
 
-##Java 8
-- Lambda expressions (e.g. (a,b) -> someMethod(a, b))
+Java 8
+------
+- Lambda expressions e.g. 
+	````
+	(a,b) -> someMethod(a, b))
+	````
 
-- Functional interfaces (which is what lambdas **are**) [**@FunctionalInterface** annotation]
-	- public interface Supplier<T> { T get(); }
-	- public interface Consumer<T> { void accept(T t); }
-	- public interface BiConsumer<T U> { void accept(T t, U u ); }
-	- public interface Predicate<T> { boolean test(T t); }
-	- public interface Function<T, R> {R apply(T t); }
-	- public interface BiFunction<T, U, R> {R apply(T t, U u); }
+	Lambdas are effectively implementations of single method interfaces
+
+- Functional interfaces
+	````
+	@FunctionalInterface
+	public interface Supplier<T> { 
+		T get(); 
+	}
+
+	@FunctionalInterface
+	public interface Consumer<T> { 
+		void accept(T t); 
+	}
+	
+	@FunctionalInterface
+	public interface BiConsumer<T U> { 		void accept(T t, U u ); 
+	}
+
+	@FunctionalInterface
+	public interface Predicate<T> { 
+		boolean test(T t); 
+	}
+
+	@FunctionalInterface
+	public interface Function<T, R> {
+		R apply(T t); 
+	}
+
+	@FunctionalInterface
+	public interface BiFunction<T, U, R> {
+		R apply(T t, U u); 
+	}
+	````
 	Predicates can be chained 
 	e.g. 
 	```
@@ -18,6 +48,7 @@
 	Predicate<String> p2 = s -> s.length() > 10;
 	Predicate<String> p3 = s -> *p1.and(p2)*;
 	```
+	Typically these are used to define the parameters to the Stream API methods (see below) which will be entered "inline" as lambdas
 
 - Method references
 	- e.g. Integer::compare, System.out::println
@@ -41,6 +72,10 @@
 		- LocalTime
 		- ZonedTime
 
+- Default methods on interfaces
+	- a necessity really for adding the other functionality but also allows future trouble-free extension of interfaces
+	- see e.g the Collector interface
+
 - StringJoiner
 		e.g. 
 
@@ -51,12 +86,15 @@
 - Java I/O Enhancements
 
 	For reading files etc now - better to use 
-	e.g Stream<String> streamLines = reader.lines(); // on a BufferedReader in a try-with-resources block
+	e.g 
+	Stream<String> streamLines = reader.lines(); // on a BufferedReader in a try-with-resources block
 	
+	````
 	Path path = Paths.get("d", "tmp", "debug.log");
 	try (Stream<String> logLines = Files.lines(path)) {
 		...
 	}
+	````
 
 - Collections API and Hashmap
 	- Addition of stream(), parallelStream(), spliterator(), forEach(), removeIf(), replaceAll(), sort()
@@ -68,20 +106,21 @@
 
 - Annotations
 	Multiple now allowed e.g.
-
-			@TestCase(param=1, expected=false)
-			@TestCase(param=2, expected=true)
-			
+	````
+	@TestCase(param=1, expected=false)
+	@TestCase(param=2, expected=true)
+	````		
 
 	and on types
 	````			
-			private @NonNull List<@NonNull Person> persons = ...;
+	private @NonNull List<@NonNull Person> persons = ...;
 	````
 
 - Java FX added to JDK (but see Java 11 changes !)
 - Nashorn Javascript engine (but see Java 11 deprecation of..)
 
-##Java 9
+Java 9
+------
 - The new module system
 
 		module java.base{
@@ -107,8 +146,10 @@
 	- List.of (e.g. List<Integer> int = List.of(1,2,3);)
 	- Set.of
 	- Map.of(e.g. Map.of("Key1",1, "Key2", 2);) or (even better):-
+	````
+	Map<String, List> myMap = Map.ofEntries(Map.Entry("Key1", true), Map.Entry("Key2", false);)
+	````
 
-			Map<String, List> myMap = Map.ofEntries(Map.Entry("Key1", true), Map.Entry("Key2", false);)
 		
 - Stream API improvements/additions
 	- Stream<T> **takeWhile**(Predicate<? super T> predicate)
@@ -120,7 +161,7 @@
 	- groupingBy e.g 
 		````
 		Map<Integer, List<Integer> ints = Stream.of(1, 2, 3, 3)
-										.collect(groupingBy(i -> i%2, toList() ) );
+		.collect(groupingBy(i -> i%2, toList() ) );
 		````
 	- filtering e.g.
 		````
@@ -130,16 +171,17 @@
 					filtering(b -> b.getPrice() > 10,
 					toSet() )
 					)
-					);
+			);
 		````
 
 	- flatMapping e.g.
 		````
 		Map<Double, Set<String>> authorsSellingForPrice = 
 			books.collect(
-					groupingBy(Book::getPrice,
-								flatMapping(b -> b.getAuthors().stream(),
-								toSet())
+					groupingBy(
+						Book::getPrice,
+						flatMapping(b -> b.getAuthors().stream(),
+						toSet())
 						)
 			);
 		````
@@ -153,14 +195,20 @@
 	- ProcessHandle e.g.
 		````
 		ProcessHandle.allProcesses()
-					.map(ProcessHandle::info)
-					.sorted(Comparator.comparing( 
+				.map(ProcessHandle::info)
+				.sorted(Comparator.comparing( 
 						info -> info.startInstant.orElse(Instant.MAX)))
-					.forEach(ListProcesses::printInfo)
+				.forEach(ListProcesses::printInfo)
 		````
 
 - HttpClient (experimental only !!)
 	- send(), sendAsync() - CompletableFuture, thenAccept(), join() etc..
+
+- jlink - allows production of a runtime image e.g. for deployment (if required)
+
+- Applets deprecated (but see Java 11)
+
+- Private interface methods
 
 - Reactive Streams
 	- an event driven way of handling streams of data
@@ -191,7 +239,8 @@
 - Compact Strings
 	- lower mem usage & effective without any code changes
 
-##Java 10
+Java 10
+-------
 - Local variable type inference (**var**)
 	- this is a reserved type not a keyword
 	- not allowed in lambdas (cf Java 11)
@@ -212,7 +261,8 @@
 
 
 
-##Java 11
+Java 11
+-------
 - Single file source code
 	- can avoid the 2 step process of javac then java (java Hello.java is enough - will compile and run)
 	- can also use executable Java script with #! (e.g. #!/user/bin/java -- source 11)
@@ -232,7 +282,7 @@
 	- published on Maven Central as "javafx"
 	- Javapackager also removed (possibly to be supplanted by JPackager)
 
-- HttpClient
+- HttpClient (java.net.http)
 	- no longer "incubated" as in Java 9,10 (no requirement to use --add-modules jdk.incubator.httpclient)
 
 - Lib improvements
@@ -245,9 +295,9 @@
 
 		````
 	- Predicate::not 
-	````
-		.filter(Predicate.not(String::isBlank))
-	````
+		````
+			.filter(Predicate.not(String::isBlank))
+		````
 	- Alignment with Unicode 10 (inc Bitcoin symbol)
 
 - Local Variable Syntax for Lambda parameters
@@ -255,9 +305,9 @@
 	(var a, var b) -> a.concat(b)
 	````
 	- this is useful if e.g. you wish to annotate types
-	````
-	(@NonNull var a, @Nullable var b) -> a.concat(b)
-	````
+		````
+		(@NonNull var a, @Nullable var b) -> a.concat(b)
+		````
 
 - Nest based access control
 	- Inner classes calling private methods on containing classes - not previously possible but these now get declared as "nestmates"
@@ -274,7 +324,8 @@
 		- BUT only available on Linux
 
 
-##Java 12
+Java 12
+-------
 
 - String additional methods
 	- indent()
@@ -370,7 +421,8 @@
 	- mainly to pave way for future enhancements
 
 
-##Java 13
+Java 13
+-------
 - API updates
 	- ByteBuffer - provides a view of bytes on/outside the heap
 		````
