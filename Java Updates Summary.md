@@ -1,5 +1,5 @@
 
-***Just a few basic summation of the more recent and important enhancements to Java***
+***Just a few basic summations of the more recent and important enhancements to Java***
 
 Java 8
 ------
@@ -23,7 +23,8 @@ Java 8
 	}
 	
 	@FunctionalInterface
-	public interface BiConsumer<T U> { 		void accept(T t, U u ); 
+	public interface BiConsumer<T U> { 		
+		void accept(T t, U u ); 
 	}
 
 	@FunctionalInterface
@@ -41,12 +42,12 @@ Java 8
 		R apply(T t, U u); 
 	}
 	````
-	Predicates can be chained 
+	Predicates can be chained using **and**
 	e.g. 
 	```
 	Predicate<String> p1 = s -> s.length() < 20;
 	Predicate<String> p2 = s -> s.length() > 10;
-	Predicate<String> p3 = s -> *p1.and(p2)*;
+	Predicate<String> p3 = s -> p1.and(p2);
 	```
 	Typically these are used to define the parameters to the Stream API methods (see below) which will be entered "inline" as lambdas
 
@@ -381,7 +382,7 @@ Java 12
 
 - Java Microbenchmarking Harness (JMH)
 	- Performance measuring for small pieces of code e.g to compare alternatives or prevent performance regression
-	- Reproducablity - handles JVNM warmup for consistent reporting etc.
+	- Reproducability - handles JVM warmup for consistent reporting etc.
 	- Annotation based !
 	- Initialise a benchmark project with Maven (mvn archetype:generate "@Benchmark")
 	- @BenchmarkMode(Mode.AverageTime) - note similarity to approach in JUnit
