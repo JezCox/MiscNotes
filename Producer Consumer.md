@@ -189,7 +189,8 @@ public class ProducerConsumer {
 }
 ```
 Full code Gist (for copy and paste) [here](https://gist.github.com/JezCox/4d7da17fff9ed59f382fec6eaf748e76)
-- An improvement on the previous - instead of using sleep() [primitive to say the least] calls wait/notify on the lock to signal the converse Thread(Runnable)
+- An improvement on the previous 
+- Instead of using sleep(), the implicit **monitor** of an Object is used as the synchronisation lock (to call *synchronized()* with) and *wait()*/*notify()* called on this to suspend or signal the relevant/converse Thread(Runnable)
 - Use of a ReentrantLock is a much better solution though (see below)
 
 ---
@@ -289,8 +290,8 @@ public class ProducerConsumer {
 ```
 Full code Gist (for copy and paste) [here](https://gist.github.com/JezCox/29cff29c7cd26c559e0febd2d9c055cc)
 - Better still
-- Note that this time Condition objects are derived from the ReentrantLock and await()/signal() called on these (not the analogous wait()/notify() being directly called on the "lock" itself as in the case of a simple Object "lock")
-
+- Note that this time **Condition** objects are derived from the **ReentrantLock** and *await()*/*signal()* called on these (not the analogous *wait()*/*notify()* being directly called on the implicit monitor of the "lock"(Object) itself as in the case of a simple Object "lock")
+---
 
 4.Using a Concurrent collection
 -----------------------------
