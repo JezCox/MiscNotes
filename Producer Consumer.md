@@ -221,24 +221,28 @@ public class ProducerConsumer {
             int count = 0;
             while (count < ITERATIONS_PER_THREAD) {
                 reentrantLock.lock();
-                while(isBufferFull()) {
-                    try {
-                        logger.info("Producer calling await on Full Condition..");
-                        condIsFull.await();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                try {
+                    while(isBufferFull()) {
+                        try {
+                            logger.info("Producer calling await on Full Condition..");
+                            condIsFull.await();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
 
-                while(!isBufferFull()) {
-                    logger.info( Thread.currentThread().getName() + " : adding " + count);
-                    logger.info( "buffer is size:" + buffer.size());
-                    buffer.add(count);
-                    count++;
+                    while(!isBufferFull()) {
+                        logger.info( Thread.currentThread().getName() + " : adding " + count);
+                        logger.info( "buffer is size:" + buffer.size());
+                        buffer.add(count);
+                        count++;
+                    }
+                    logger.info("Producer signalling Empty Condition (to indicate buffer full)");
+                    condIsEmpty.signal();
+
+                } finally {
+                    reentrantLock.unlock();
                 }
-                logger.info("Producer signalling Empty Condition (to indicate buffer full)");
-                condIsEmpty.signal();
-                reentrantLock.unlock();
             }
             logger.info("Producer terminating");
 
@@ -248,23 +252,27 @@ public class ProducerConsumer {
             int count = 0;
             while (count < ITERATIONS_PER_THREAD) {
                 reentrantLock.lock();
-                while(isBufferEmpty()) {
-                    try {
-                        logger.info("Consumer calling await on Empty Condition");
-                        condIsEmpty.await();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                try {
+                    while(isBufferEmpty()) {
+                        try {
+                            logger.info("Consumer calling await on Empty Condition");
+                            condIsEmpty.await();
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
                     }
-                }
 
-                while(!isBufferEmpty()) {
-                    int item = buffer.remove(0);
-                    logger.info( Thread.currentThread().getName() + " : removed " + item);
-                    count++;
+                    while(!isBufferEmpty()) {
+                        int item = buffer.remove(0);
+                        logger.info( Thread.currentThread().getName() + " : removed " + item);
+                        count++;
+                    }
+                    logger.info("Consumer signalling Full Condition (to indicate buffer empty)");
+                    condIsFull.signal();
+
+                } finally {
+                    reentrantLock.unlock();
                 }
-                logger.info("Consumer signalling Full Condition (to indicate buffer empty)");
-                condIsFull.signal();
-                reentrantLock.unlock();
             }
             logger.info("Consumer terminating");
         };
